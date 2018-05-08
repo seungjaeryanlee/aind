@@ -50,9 +50,12 @@ class CustomPlayer(DataPlayer):
         else:
             # Iterative Deepening
             for i in range(3, 32):
-                self.queue.put(self.minimax(state, depth=i))
+                self.queue.put(self.alphabeta(state, depth=i))
 
-    def minimax(self, state, depth):
+    def alphabeta(self, state, depth):
+        """
+        Minimax search with alpha-beta pruning.
+        """
         def min_value(state, depth, alpha, beta):
             if state.terminal_test(): return state.utility(self.player_id)
             if depth <= 0: return self.score(state)
