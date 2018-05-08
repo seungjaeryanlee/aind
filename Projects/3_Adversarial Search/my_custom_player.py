@@ -41,13 +41,16 @@ class CustomPlayer(DataPlayer):
         """
         # TODO: Replace the example implementation below with your own search
         #       method by combining techniques from lecture
-        #
-        # EXAMPLE: choose a random move without any search--this function MUST
-        #          call self.queue.put(ACTION) at least once before time expires
-        #          (the timer is automatically managed for you)
-        if state.ply_count < 2: self.queue.put(random.choice(state.actions()))
-        for i in range(3, 32):
-            self.queue.put(self.minimax(state, depth=i))
+
+        # Pick starting position with 8 moves
+        if state.ply_count < 2:
+            for loc in state.actions():
+                if len(state.liberties(loc)) == 8:
+                    self.queue.put(random.choice(state.actions()))
+        else:
+            # Iterative Deepening
+            for i in range(3, 32):
+                self.queue.put(self.minimax(state, depth=i))
 
     def minimax(self, state, depth):
         def min_value(state, depth, alpha, beta):
