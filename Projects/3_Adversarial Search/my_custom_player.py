@@ -46,7 +46,8 @@ class CustomPlayer(DataPlayer):
         else:
             # Iterative Deepening
             for i in range(3, 32):
-                self.queue.put(self.alphabeta(state, depth=i))
+                # self.queue.put(self.alphabeta(state, depth=i))
+                self.queue.put(self.negamax_alphabeta(state, depth=i, alpha=float("-inf"), beta=float("inf"), color=1))
 
     def negamax_root(self, state, depth, color):
         """
@@ -61,6 +62,23 @@ class CustomPlayer(DataPlayer):
             return value
 
         return max(state.actions(), key=lambda x: -negamax(state.result(x), depth - 1, -color))
+
+    def negamax_alphabeta(self, state, depth, alpha, beta, color):
+        """
+        Negamax variant of Minimax with alpha-beta pruning.
+        """
+        def negamax(state, depth, alpha, beta, color):
+            if state.terminal_test(): return color * state.utility(self.player_id)
+            if depth <= 0: return color * self.score(state)
+            best_value = float("-inf")
+            for action in state.actions():
+                value = -negamax(state.result(action), depth - 1, -beta, -alpha, -color)
+                best_value = max(best_value, value)
+                alpha = max(alpha, value)
+                if beta <= alpha: break
+            return best_value
+
+        return max(state.actions(), key=lambda x: -negamax(state.result(x), depth - 1, -beta, -alpha, -color))
 
     def alphabeta(self, state, depth):
         """
