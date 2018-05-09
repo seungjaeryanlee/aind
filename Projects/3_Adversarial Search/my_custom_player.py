@@ -42,11 +42,7 @@ class CustomPlayer(DataPlayer):
         # TODO: Replace the example implementation below with your own search
         #       method by combining techniques from lecture
 
-        # Pick starting position with 8 moves
-        if state.ply_count < 2:
-            for loc in state.actions():
-                if len(state.liberties(loc)) == 8:
-                    self.queue.put(random.choice(state.actions()))
+        if state.ply_count < 2: self.queue.put(random.choice(state.actions()))
         else:
             # Iterative Deepening
             for i in range(3, 32):
