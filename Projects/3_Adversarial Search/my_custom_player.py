@@ -48,6 +48,20 @@ class CustomPlayer(DataPlayer):
             for i in range(3, 32):
                 self.queue.put(self.alphabeta(state, depth=i))
 
+    def negamax_root(self, state, depth, color):
+        """
+        Negamax variant of Minimax
+        """
+        def negamax(state, depth, color):
+            if state.terminal_test(): return color * state.utility(self.player_id)
+            if depth <= 0: return color * self.score(state)
+            value = float("-inf")
+            for action in state.actions():
+                value = max(value, -negamax(state.result(action), depth - 1, -color))
+            return value
+
+        return max(state.actions(), key=lambda x: -negamax(state.result(x), depth - 1, -color))
+
     def alphabeta(self, state, depth):
         """
         Minimax search with alpha-beta pruning.
