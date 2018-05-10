@@ -56,6 +56,7 @@ class CustomPlayer(DataPlayer):
         # TODO: Replace the example implementation below with your own search
         #       method by combining techniques from lecture
 
+        import random
         if state.ply_count < 2: self.queue.put(random.choice(state.actions()))
         else:
             # Default: Depth 3
