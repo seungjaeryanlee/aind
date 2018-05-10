@@ -12,3 +12,5 @@ classical_planning*.json
 
 # Adversarial Search
 Projects/3_Adversarial Search/matches.log
+adversarial_search*.zip
+adversarial_search*.json
