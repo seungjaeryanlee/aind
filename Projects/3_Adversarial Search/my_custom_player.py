@@ -58,41 +58,37 @@ class CustomPlayer(DataPlayer):
 
         if state.ply_count < 2: self.queue.put(random.choice(state.actions()))
         else:
+            # Default: Depth 3
+            # self.queue.put(self.minimax(state, depth=3))
+
             # Iterative Deepening
             for i in range(3, 32):
-                # self.queue.put(self.alphabeta(state, depth=i))
-                self.queue.put(self.negamax_alphabeta(state, depth=i, alpha=float("-inf"), beta=float("inf"), color=1))
+                # self.queue.put(self.minimax(state, depth=i))
+                self.queue.put(self.alphabeta(state, depth=i))
+                # self.queue.put(self.negamax_root(state, depth=i, color=1))
+                # self.queue.put(self.negamax_alphabeta(state, depth=i, color=1))
 
-    def negamax_root(self, state, depth, color):
+    def minimax(self, state, depth):
         """
-        Negamax variant of Minimax
+        Minimax search from sample_players.py.
         """
-        def negamax(state, depth, color):
-            if state.terminal_test(): return color * state.utility(self.player_id)
-            if depth <= 0: return color * self.score(state)
-            value = float("-inf")
+        def min_value(state, depth):
+            if state.terminal_test(): return state.utility(self.player_id)
+            if depth <= 0: return self.score(state)
+            value = float("inf")
             for action in state.actions():
-                value = max(value, -negamax(state.result(action), depth - 1, -color))
+                value = min(value, max_value(state.result(action), depth - 1))
             return value
 
-        return max(state.actions(), key=lambda x: -negamax(state.result(x), depth - 1, -color))
-
-    def negamax_alphabeta(self, state, depth, alpha, beta, color):
-        """
-        Negamax variant of Minimax with alpha-beta pruning.
-        """
-        def negamax(state, depth, alpha, beta, color):
-            if state.terminal_test(): return color * state.utility(self.player_id)
-            if depth <= 0: return color * self.score(state)
-            best_value = float("-inf")
+        def max_value(state, depth):
+            if state.terminal_test(): return state.utility(self.player_id)
+            if depth <= 0: return self.score(state)
+            value = float("-inf")
             for action in state.actions():
-                value = -negamax(state.result(action), depth - 1, -beta, -alpha, -color)
-                best_value = max(best_value, value)
-                alpha = max(alpha, value)
-                if beta <= alpha: break
-            return best_value
+                value = max(value, min_value(state.result(action), depth - 1))
+            return value
 
-        return max(state.actions(), key=lambda x: -negamax(state.result(x), depth - 1, -beta, -alpha, -color))
+        return max(state.actions(), key=lambda x: min_value(state.result(x), depth - 1))
 
     def alphabeta(self, state, depth):
         """
@@ -119,6 +115,37 @@ class CustomPlayer(DataPlayer):
             return value
 
         return max(state.actions(), key=lambda x: min_value(state.result(x), depth - 1, float("-inf"), float("inf")))
+
+    def negamax_root(self, state, depth, color):
+        """
+        Negamax variant of Minimax.
+        """
+        def negamax(state, depth, color):
+            if state.terminal_test(): return color * state.utility(self.player_id)
+            if depth <= 0: return color * self.score(state)
+            value = float("-inf")
+            for action in state.actions():
+                value = max(value, -negamax(state.result(action), depth - 1, -color))
+            return value
+
+        return max(state.actions(), key=lambda x: -negamax(state.result(x), depth - 1, -color))
+
+    def negamax_alphabeta(self, state, depth, color):
+        """
+        Negamax variant of Minimax with alpha-beta pruning.
+        """
+        def negamax(state, depth, alpha, beta, color):
+            if state.terminal_test(): return color * state.utility(self.player_id)
+            if depth <= 0: return color * self.score(state)
+            best_value = float("-inf")
+            for action in state.actions():
+                value = -negamax(state.result(action), depth - 1, -beta, -alpha, -color)
+                best_value = max(best_value, value)
+                alpha = max(alpha, value)
+                if beta <= alpha: break
+            return best_value
+
+        return max(state.actions(), key=lambda x: -negamax(state.result(x), depth - 1, float("-inf"), float("inf"), -color))
 
     def score(self, state):
         own_loc = state.locs[self.player_id]
