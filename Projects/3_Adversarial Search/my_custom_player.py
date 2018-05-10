@@ -22,6 +22,20 @@ class CustomPlayer(DataPlayer):
       suitable for using any other machine learning techniques.
     **********************************************************************
     """
+    # Square table for evaluation function
+    SENTINEL = float("-inf")
+    SQ_SCORE = [
+        -3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -3, SENTINEL, SENTINEL,
+        -1,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1, SENTINEL, SENTINEL,
+        -1,  0,  0, .5, .5, .5, .5, .5,  0,  0, -1, SENTINEL, SENTINEL,
+        -1,  0,  0, .5,  1,  1,  1, .5,  0,  0, -1, SENTINEL, SENTINEL,
+        -1,  0,  0, .5,  1,  2,  1, .5,  0,  0, -1, SENTINEL, SENTINEL,
+        -1,  0,  0, .5,  1,  1,  1, .5,  0,  0, -1, SENTINEL, SENTINEL,
+        -1,  0,  0, .5, .5, .5, .5, .5,  0,  0, -1, SENTINEL, SENTINEL,
+        -1,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1, SENTINEL, SENTINEL,
+        -3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -3, SENTINEL, SENTINEL,
+    ]
+
     def get_action(self, state):
         """ Employ an adversarial search technique to choose an action
         available in the current state calls self.queue.put(ACTION) at least
@@ -112,4 +126,7 @@ class CustomPlayer(DataPlayer):
         own_liberties = state.liberties(own_loc)
         opp_liberties = state.liberties(opp_loc)
         
-        return len(own_liberties) - len(opp_liberties)
+        if state.ply_count < 20:
+            return len(own_liberties) - len(opp_liberties) + self.SQ_SCORE[own_loc] - self.SQ_SCORE[opp_loc]
+        else:
+            return len(own_liberties) - len(opp_liberties)
