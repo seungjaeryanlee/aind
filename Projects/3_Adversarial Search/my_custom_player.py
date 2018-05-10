@@ -126,7 +126,4 @@ class CustomPlayer(DataPlayer):
         own_liberties = state.liberties(own_loc)
         opp_liberties = state.liberties(opp_loc)
         
-        if state.ply_count < 20:
-            return len(own_liberties) - len(opp_liberties) + self.SQ_SCORE[own_loc] - self.SQ_SCORE[opp_loc]
-        else:
-            return len(own_liberties) - len(opp_liberties)
+        return len(own_liberties) - len(opp_liberties) + self.SQ_SCORE[own_loc] - self.SQ_SCORE[opp_loc]
