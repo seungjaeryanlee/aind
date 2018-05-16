@@ -9,3 +9,8 @@ sudoku_solver*.json
 # Classical Planning Submission Output
 classical_planning*.zip
 classical_planning*.json
+
+# Adversarial Search
+Projects/3_Adversarial Search/matches.log
+adversarial_search*.zip
+adversarial_search*.json
